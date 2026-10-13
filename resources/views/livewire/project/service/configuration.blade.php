@@ -23,6 +23,7 @@
             ['label' => 'Terminal', 'route' => 'project.service.command', 'icon' => 'browser-terminal', 'navigate' => false, 'visible' => auth()->user()?->can('canAccessTerminal')],
             ['label' => 'Analytics', 'route' => 'project.service.analytics', 'icon' => 'analytics'],
             ['label' => 'Scheduled Tasks', 'route' => 'project.service.scheduled-tasks.show', 'icon' => 'calendar'],
+            ['label' => 'Image Updates', 'route' => 'project.service.image-updates', 'icon' => 'layers'],
             ['label' => 'Webhooks', 'route' => 'project.service.webhooks', 'icon' => 'notifications'],
             ['label' => 'Resource Operations', 'route' => 'project.service.resource-operations', 'icon' => 'server-update'],
             ['label' => 'Tags', 'route' => 'project.service.tags', 'icon' => 'tags'],
@@ -37,7 +38,7 @@
         $menuGroups = [
             'Settings' => ['General', 'Domains', 'Environment Variables', 'Persistent Storage'],
             'Observe & troubleshoot' => ['Runtime Logs', 'Terminal', 'Analytics'],
-            'Automation' => ['Scheduled Tasks', 'Webhooks', 'Backups', 'Import Backup'],
+            'Automation' => ['Scheduled Tasks', 'Image Updates', 'Webhooks', 'Backups', 'Import Backup'],
             'Operations' => ['Resource Operations', 'Tags', 'Danger Zone'],
         ];
 
@@ -220,6 +221,8 @@
                     <livewire:project.shared.scheduled-task.all :resource="$service" />
                 @elseif ($currentRoute === 'project.service.scheduled-tasks')
                     <livewire:project.shared.scheduled-task.show />
+                @elseif ($currentRoute === 'project.service.image-updates')
+                    <livewire:project.shared.image-updates :resource="$service" />
                 @elseif ($currentRoute === 'project.service.webhooks')
                     <livewire:project.shared.webhooks :resource="$service" />
                 @elseif ($currentRoute === 'project.service.resource-operations')

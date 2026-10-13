@@ -3,12 +3,15 @@
 namespace App\Jobs;
 
 use App\Actions\Shared\DeleteScheduledVolumeBackup;
+use App\Models\Application;
+use App\Models\ImageUpdateCheck;
 use App\Models\ScheduledDatabaseBackup;
 use App\Models\ScheduledTask;
 use App\Models\ScheduledVolumeBackup;
 use App\Models\ScheduledVolumeBackupExecution;
 use App\Models\Server;
 use App\Models\ServerSetting;
+use App\Models\Service;
 use App\Models\ServiceDatabase;
 use App\Models\Subscription;
 use App\Models\Team;
@@ -52,6 +55,7 @@ class ScheduledJobManager implements ShouldQueue
         'tasks' => ['scheduled-task'],
         'volume-backups' => ['volume-backup'],
         'docker-cleanups' => ['docker-cleanup'],
+        'image-update-checks' => ['image-update-check'],
     ];
 
     /**
@@ -195,6 +199,17 @@ class ScheduledJobManager implements ShouldQueue
             }
         } catch (\Throwable $e) {
             Log::channel('scheduled-errors')->error('Failed to process docker cleanups', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+
+        try {
+            if ($this->includes('image-update-checks')) {
+                $this->processImageUpdateChecks();
+            }
+        } catch (\Throwable $e) {
+            Log::channel('scheduled-errors')->error('Failed to process image update checks', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -733,6 +748,64 @@ class ScheduledJobManager implements ShouldQueue
             Log::channel('scheduled-errors')->error('Error processing docker cleanup', [
                 'server_id' => $server->id,
                 'server_name' => $server->name,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function processImageUpdateChecks(): void
+    {
+        $serverRelations = ['destination.server.settings', 'destination.server.team.subscription'];
+
+        ImageUpdateCheck::query()
+            ->with(['resource' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                Application::class => $serverRelations,
+                Service::class => [...$serverRelations, 'server.settings', 'server.team.subscription'],
+            ])])
+            ->whereNotNull('frequency')
+            ->chunkById(self::CHUNK_SIZE, function ($checks): void {
+                foreach ($checks as $check) {
+                    $this->processImageUpdateCheck($check);
+                }
+            });
+    }
+
+    private function processImageUpdateCheck(ImageUpdateCheck $check): void
+    {
+        try {
+            $server = $check->server();
+            if (! $server) {
+                if (! $check->resource) {
+                    $check->delete();
+                }
+
+                return;
+            }
+
+            if (! $this->isDueCandidateBeforeExpensiveChecks($check->frequency, $server)) {
+                return;
+            }
+
+            $skipReason = $this->getDockerCleanupSkipReason($server);
+            if ($skipReason !== null) {
+                if ($this->recordSkippedOccurrence($check->frequency, $server, $check->scheduleKey())) {
+                    $this->skippedCount++;
+                    $this->logSkip('image_update_check', $skipReason, [
+                        'image_update_check_id' => $check->id,
+                        'server_id' => $server->id,
+                        'team_id' => $check->team_id,
+                    ]);
+                }
+
+                return;
+            }
+
+            if ($this->dispatchOccurrence($check->frequency, $server, $check->scheduleKey(), 'image-update-check', $check->id)) {
+                $this->dispatchedCount++;
+            }
+        } catch (\Throwable $e) {
+            Log::channel('scheduled-errors')->error('Error processing image update check', [
+                'image_update_check_id' => $check->id,
                 'error' => $e->getMessage(),
             ]);
         }

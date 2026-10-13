@@ -16,6 +16,7 @@ use App\Models\ApplicationPreview;
 use App\Models\EnvironmentVariable;
 use App\Models\GithubApp;
 use App\Models\GitlabApp;
+use App\Models\ImageUpdateCheck;
 use App\Models\Server;
 use App\Models\StandaloneDocker;
 use App\Models\SwarmDocker;
@@ -5919,6 +5920,7 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf");
 
         if ($this->pull_request_id === 0) {
             $this->application->update($restartState);
+            ImageUpdateCheck::recheckPendingUpdates($this->application);
         } else {
             $this->preview?->resetRestartLimit();
         }

@@ -109,9 +109,9 @@ it('runs one scheduled job dispatcher for each schedule type in concurrent mode'
     $dispatchers = scheduledJobDispatchersForMode($mode, $selfHosted);
 
     expect($dispatchers->map(fn ($event) => str((string) $event->command)->after('--type=')->value())->all())
-        ->toBe(['backups', 'tasks', 'volume-backups', 'docker-cleanups'])
+        ->toBe(['backups', 'tasks', 'volume-backups', 'docker-cleanups', 'image-update-checks'])
         // Each type has its own overlap lock.
-        ->and($dispatchers->map->mutexName()->unique())->toHaveCount(4);
+        ->and($dispatchers->map->mutexName()->unique())->toHaveCount(5);
 })->with([
     'set on self-hosted' => ['concurrent', true],
     'default on Coolify Cloud' => [null, false],
@@ -123,7 +123,7 @@ it('runs one dispatcher process when sequential mode is set on Coolify Cloud', f
 
 it('falls back to the default dispatch mode for an unknown value', function () {
     expect(scheduledJobDispatchersForMode('parallel'))->toHaveCount(1)
-        ->and(scheduledJobDispatchersForMode('parallel', false))->toHaveCount(4);
+        ->and(scheduledJobDispatchersForMode('parallel', false))->toHaveCount(5);
 });
 
 it('schedules GitHub runner reconciliation every minute on Coolify Cloud', function () {

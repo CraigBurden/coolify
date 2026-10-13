@@ -15,6 +15,7 @@ use App\Traits\HasSecretManager;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use OpenApi\Attributes as OA;
@@ -1602,6 +1603,11 @@ class Service extends BaseModel
     public function environment_variables()
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable');
+    }
+
+    public function imageUpdateChecks(): MorphMany
+    {
+        return $this->morphMany(ImageUpdateCheck::class, 'resource');
     }
 
     public function workdir()

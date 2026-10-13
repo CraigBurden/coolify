@@ -43,6 +43,7 @@
                     @if ($selectedResource)
                         <x-application.restart-limit-warning :application="$selectedResource" />
                     @endif
+                    <x-image-update-badge :resource="$service" />
                 </div>
             </div>
         </div>

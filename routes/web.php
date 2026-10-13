@@ -303,6 +303,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/source', ApplicationConfiguration::class)->name('project.application.source');
         Route::get('/servers', ApplicationConfiguration::class)->name('project.application.servers');
         Route::get('/scheduled-tasks', ApplicationConfiguration::class)->name('project.application.scheduled-tasks.show');
+        Route::get('/image-updates', ApplicationConfiguration::class)->name('project.application.image-updates');
         Route::get('/webhooks', ApplicationConfiguration::class)->name('project.application.webhooks');
         Route::get('/preview-deployments', ApplicationConfiguration::class)->name('project.application.preview-deployments');
         Route::get('/healthcheck', ApplicationConfiguration::class)->name('project.application.healthcheck');
@@ -359,6 +360,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/storage-backups/{backup_uuid}/executions', Show::class)->name('project.service.volume-backups.executions');
         Route::get('/storage-backups/{backup_uuid}/danger', Show::class)->name('project.service.volume-backups.danger');
         Route::get('/scheduled-tasks', ServiceConfiguration::class)->name('project.service.scheduled-tasks.show');
+        Route::get('/image-updates', ServiceConfiguration::class)->name('project.service.image-updates');
         Route::get('/webhooks', ServiceConfiguration::class)->name('project.service.webhooks');
         Route::get('/resource-operations', ServiceConfiguration::class)->name('project.service.resource-operations');
         Route::get('/tags', ServiceConfiguration::class)->name('project.service.tags');

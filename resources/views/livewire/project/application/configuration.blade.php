@@ -32,6 +32,8 @@
                 <livewire:project.shared.scheduled-task.all :resource="$application" />
             @elseif ($currentRoute === 'project.application.scheduled-tasks')
                 <livewire:project.shared.scheduled-task.show />
+            @elseif ($currentRoute === 'project.application.image-updates')
+                <livewire:project.shared.image-updates :resource="$application" />
             @elseif ($currentRoute === 'project.application.webhooks')
                 <livewire:project.shared.webhooks :resource="$application" />
             @elseif ($currentRoute === 'project.application.preview-deployments')

@@ -939,6 +939,7 @@ it('uses a separate overlap lock for each type', function () {
         'scheduled-job-manager:tasks',
         'scheduled-job-manager:volume-backups',
         'scheduled-job-manager:docker-cleanups',
+        'scheduled-job-manager:image-update-checks',
     ]);
 });
 

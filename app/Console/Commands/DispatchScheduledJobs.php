@@ -8,9 +8,9 @@ use Illuminate\Console\Command;
 class DispatchScheduledJobs extends Command
 {
     protected $signature = 'scheduled:dispatch
-        {--type= : Only one schedule type: backups, tasks, volume-backups, or docker-cleanups. Empty runs all types.}';
+        {--type= : Only one schedule type: backups, tasks, volume-backups, docker-cleanups, or image-update-checks. Empty runs all types.}';
 
-    protected $description = 'Dispatch the due scheduled backups, tasks, volume backups, and Docker cleanups';
+    protected $description = 'Dispatch the due scheduled backups, tasks, volume backups, Docker cleanups, and image update checks';
 
     public function handle(): int
     {

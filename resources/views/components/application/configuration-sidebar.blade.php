@@ -79,6 +79,12 @@
                 'active' => str($currentRoute)->startsWith('project.application.scheduled-tasks'),
             ],
             [
+                'label' => 'Image Updates',
+                'route' => 'project.application.image-updates',
+                'active' => $currentRoute === 'project.application.image-updates',
+                'visible' => in_array($application->build_pack, ['dockercompose', 'dockerimage'], true),
+            ],
+            [
                 'label' => 'Webhooks',
                 'route' => 'project.application.webhooks',
                 'active' => $currentRoute === 'project.application.webhooks',
@@ -152,6 +158,7 @@
             'Git Source' => 'sources',
             'Servers' => 'servers',
             'Scheduled Tasks' => 'calendar',
+            'Image Updates' => 'layers',
             'Webhooks' => 'notifications',
             'Preview Deployments' => 'eye',
             'Healthcheck' => 'feedback',
@@ -169,7 +176,7 @@
             'Settings' => ['General', 'Domains', 'Environment Variables', 'Persistent Storage', 'Advanced', 'Swarm', 'Healthcheck'],
             'Observe & troubleshoot' => ['Runtime Logs', 'Deployment Logs', 'Terminal', 'Metrics', 'Analytics'],
             'Deploy' => ['Git Source', 'Servers', 'Preview Deployments'],
-            'Automation' => ['Scheduled Tasks', 'Webhooks', 'Backups'],
+            'Automation' => ['Scheduled Tasks', 'Image Updates', 'Webhooks', 'Backups'],
             'Operations' => ['Resource Operations', 'Resource Limits', 'Rollback', 'Tags', 'Danger Zone'],
         ];
         $groupedMenuItems = collect($menuGroups)

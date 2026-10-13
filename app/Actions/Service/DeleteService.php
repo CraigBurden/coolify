@@ -134,6 +134,7 @@ class DeleteService
             $task->delete();
         }
         $service->environment_variables()->delete();
+        $service->imageUpdateChecks()->delete();
         $service->tags()->detach();
         $service->forceDelete();
     }

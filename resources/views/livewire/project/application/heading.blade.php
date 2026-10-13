@@ -15,6 +15,7 @@
                 </div>
                 <div class="flex w-full flex-wrap gap-1">
                     <x-application.restart-limit-warning :application="$application" />
+                    <x-image-update-badge :resource="$application" />
                 </div>
             </div>
         </div>

@@ -5,11 +5,13 @@ namespace App\Services;
 use App\Events\BackupCreated;
 use App\Events\DockerCleanupDone;
 use App\Events\ScheduledTaskDone;
+use App\Jobs\CheckImageUpdateJob;
 use App\Jobs\DatabaseBackupJob;
 use App\Jobs\DockerCleanupJob;
 use App\Jobs\ScheduledTaskJob;
 use App\Jobs\VolumeBackupJob;
 use App\Models\DockerCleanupExecution;
+use App\Models\ImageUpdateCheck;
 use App\Models\NotificationThrottle;
 use App\Models\ScheduledDatabaseBackup;
 use App\Models\ScheduledDatabaseBackupExecution;
@@ -612,6 +614,9 @@ class ScheduledJobDeliveryService
                     data_get($occurrence->payload, 'delete_unused_networks', false),
                     $occurrence->uuid,
                 )
+                : null,
+            'image-update-check' => ($check = ImageUpdateCheck::find($occurrence->resource_id))
+                ? new CheckImageUpdateJob($check, $occurrence->uuid)
                 : null,
             default => null,
         };

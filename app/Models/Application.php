@@ -27,6 +27,7 @@ use Database\Factories\ApplicationFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -424,6 +425,7 @@ class Application extends BaseModel
             foreach ($application->scheduled_tasks as $task) {
                 $task->delete();
             }
+            $application->imageUpdateChecks()->delete();
             $application->tags()->detach();
             $application->previews()->delete();
             foreach ($application->deployment_queue as $deployment) {
@@ -1154,6 +1156,11 @@ class Application extends BaseModel
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', false);
+    }
+
+    public function imageUpdateChecks(): MorphMany
+    {
+        return $this->morphMany(ImageUpdateCheck::class, 'resource');
     }
 
     public function runtime_environment_variables()
